@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Simple Brunch Demo</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div id="dataBudgets" data-view="dataBudgets">
+            <h2>Gestion budget</h2>
+            <div class="budgets"></div>
+        </div>
+    
+        <div id="dataLines" data-view="datalines">
+            <h2>Suivi conso</h2>
+            <div class="dataLinesForm"></div>
+            <hr />
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>date</th>
+                        <th>titre</th>
+                        <th>mot clé</th>
+                        <th>montant</th>
+                        <th>action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+    <script>
+    require('application').init();
+    </script>
+</body>
+
+</html>

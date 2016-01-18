@@ -1,0 +1,7 @@
+body {
+	padding-top: 50px;
+}
+
+#type_line label.active  {
+	color:black;
+}
