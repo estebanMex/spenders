@@ -1,8 +1,6 @@
-function trim(data) {
-    return $.trim(data);
-}
-
-var Collections = require('collections'),
+var helpers = require('helpers'),
+    trim = helpers.trim,
+    Collections = require('collections'),
     Models = require('models'),
     dataLinesCollection = Collections.DataLines,
     FormGridView,
@@ -25,35 +23,36 @@ FormBudgetView = Backbone.View.extend({
             var date_start = trim(this.$el.find('input[name="date_start"]').val());;
             var date_end = trim(this.$el.find('input[name="date_end"]').val());;
 
-            console.log(title);
-
             var budget = new Models.Budget({
-                title: title,
-                amount: amount,
-                percentage_max: percentage_max,
-                date_start: date_start,
-                date_end: date_end
+                title: trim(title),
+                amount: trim(amount),
+                date_start: trim(date_start),
+                date_end: trim(date_end)
             });
 
-            if(!budget.isValid()){
-            	alert('n\'est pas valid');
+            if (!budget.isValid()) {
+                alert(budget.validationError);
             }
 
             budget.save();
-            this.el.reset();
+            this._clearForm();
+
         },
         reset: function() {
-            // this.el.reset();
+            this._clearForm();
         }
     },
+    _clearForm: function() {
+        this.el.reset();
+        this.$el.find('input[name="title"]').focus();
+    },
+
     model: null,
     template: _.template(['<div class="form-group">',
         ' <label for="title">Budget</label> <input type="text" name="title" id="title" class="form-control"/>',
         ' <label for="amount">montant</label> <input type="number" step="any" min="0" name="amount" class="form-control"/>',
-        ' <label for="percentage_max">% max</label><input type="number" step="any" min="0" name="percentage_max" class="form-control"/>',
         ' <label for="date_start">de </label> <input type="date" name="date_start" class="form-control"/>',
         ' <label for="date_end"> au </label> <input type="date" name="date_end" class="form-control"/>',
-
         '&nbsp;&nbsp;<input type="submit" value="ajouter" class="form-control"/>',
         '&nbsp;&nbsp;<input type="reset" value="annuler" class="form-control"/>',
         '</div>'

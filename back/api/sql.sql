@@ -18,7 +18,6 @@ CREATE TABLE `budgets` (
   `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
   `title` VARCHAR(50) NOT NULL,
   `amount` FLOAT NULL,
-  `percentage_max` INTEGER NULL,
   `status` VARCHAR(2) NOT NULL DEFAULT 'OK',
   `date_start` datetime NULL,
   `date_end` datetime NULL,
