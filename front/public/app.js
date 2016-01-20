@@ -25243,30 +25243,30 @@ var Budget = Backbone.Model.extend({
         date_start: '', // definir le 1er jour du mois courant
         date_end: '', // definir le dernier jour du mois courant
     },
-    getDatesCurrentMonth: function(){
-    	var objDate = moment(),
-    		firstDay = 1,
-    		lastDay = objDate.daysInMonth(),
-    		month = objDate.month(),
-    		year = objDate.year();
-    		
-    	return {
-    		date_start:'',
-    		date_end :''
-    	}
+    getDatesCurrentMonth: function() {
+        var objDate = moment(),
+            firstDay = 1,
+            lastDay = objDate.daysInMonth(),
+            month = objDate.month(),
+            year = objDate.year();
+
+        return {
+            date_start: '',
+            date_end: ''
+        }
     }(),
     url: '../../back/api/api.php/budgets/',
     validate: function(attrs, options) {
         var errors = [];
 
-        if(!attrs.title){
-        	errors.push('Le champ titre du budget est obligatoire');
+        if (!attrs.title) {
+            errors.push('Le champ titre du budget est obligatoire');
         }
 
-        if(!attrs.amount  && !attrs.percentage_max){
-        	errors.push('Merci de renseigner un des deux parametres: montant ou pourcentage max');
+        if (!attrs.amount) {
+            errors.push('Le champ montant est obligatoire');
         }
-    
+
         if (errors.length > 0) {
             return errors.join("\n\n");
         }
@@ -25373,7 +25373,7 @@ FormBudgetView = Backbone.View.extend({
     template: _.template(['<div class="form-group">',
         ' <label for="title">Budget</label> <input type="text" name="title" id="title" class="form-control"/>',
         ' <label for="amount">montant</label> <input type="number" step="any" min="0" name="amount" class="form-control"/>',
-        ' <label for="date_start">de </label> <input type="date" name="date_start" class="form-control"/>',
+        ' <label for="date_start">du </label> <input type="date" name="date_start" class="form-control"/>',
         ' <label for="date_end"> au </label> <input type="date" name="date_end" class="form-control"/>',
         '&nbsp;&nbsp;<input type="submit" value="ajouter" class="form-control"/>',
         '&nbsp;&nbsp;<input type="reset" value="annuler" class="form-control"/>',

@@ -51,7 +51,7 @@ FormBudgetView = Backbone.View.extend({
     template: _.template(['<div class="form-group">',
         ' <label for="title">Budget</label> <input type="text" name="title" id="title" class="form-control"/>',
         ' <label for="amount">montant</label> <input type="number" step="any" min="0" name="amount" class="form-control"/>',
-        ' <label for="date_start">de </label> <input type="date" name="date_start" class="form-control"/>',
+        ' <label for="date_start">du </label> <input type="date" name="date_start" class="form-control"/>',
         ' <label for="date_end"> au </label> <input type="date" name="date_end" class="form-control"/>',
         '&nbsp;&nbsp;<input type="submit" value="ajouter" class="form-control"/>',
         '&nbsp;&nbsp;<input type="reset" value="annuler" class="form-control"/>',

@@ -8,30 +8,30 @@ var Budget = Backbone.Model.extend({
         date_start: '', // definir le 1er jour du mois courant
         date_end: '', // definir le dernier jour du mois courant
     },
-    getDatesCurrentMonth: function(){
-    	var objDate = moment(),
-    		firstDay = 1,
-    		lastDay = objDate.daysInMonth(),
-    		month = objDate.month(),
-    		year = objDate.year();
-    		
-    	return {
-    		date_start:'',
-    		date_end :''
-    	}
+    getDatesCurrentMonth: function() {
+        var objDate = moment(),
+            firstDay = 1,
+            lastDay = objDate.daysInMonth(),
+            month = objDate.month(),
+            year = objDate.year();
+
+        return {
+            date_start: '',
+            date_end: ''
+        }
     }(),
     url: '../../back/api/api.php/budgets/',
     validate: function(attrs, options) {
         var errors = [];
 
-        if(!attrs.title){
-        	errors.push('Le champ titre du budget est obligatoire');
+        if (!attrs.title) {
+            errors.push('Le champ titre du budget est obligatoire');
         }
 
-        if(!attrs.amount  && !attrs.percentage_max){
-        	errors.push('Merci de renseigner un des deux parametres: montant ou pourcentage max');
+        if (!attrs.amount) {
+            errors.push('Le champ montant est obligatoire');
         }
-    
+
         if (errors.length > 0) {
             return errors.join("\n\n");
         }
