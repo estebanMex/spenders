@@ -1,25 +1,20 @@
+var helpers = require('helpers');
+
 var Budget = Backbone.Model.extend({
     defaults: {
         title: '',
         date_created: function() {
             return moment().format('YYYY-MM-D HH:MM:SS');
         }(),
-        amount: 0,
-        date_start: '', // definir le 1er jour du mois courant
-        date_end: '', // definir le dernier jour du mois courant
+        amount: 0
     },
-    getDatesCurrentMonth: function() {
-        var objDate = moment(),
-            firstDay = 1,
-            lastDay = objDate.daysInMonth(),
-            month = objDate.month(),
-            year = objDate.year();
+    initialize: function(){
+    	var firstAndLastDate = helpers.firstAndLastDateOfCurrentMonth();
 
-        return {
-            date_start: '',
-            date_end: ''
-        }
-    }(),
+        this.set('date_start', firstAndLastDate['date_start']);
+    	this.set('date_end', firstAndLastDate['date_end']);
+
+    },
     url: '../../back/api/api.php/budgets/',
     validate: function(attrs, options) {
         var errors = [];
@@ -48,7 +43,10 @@ var DataLine = Backbone.Model.extend({
         amount: 0,
         tag: ''
     },
-    url: '../../back/api/api.php/datalines/',
+    initialize: function(){
+        this.id = this.get('cid');
+    },
+    url: '../../back/api/api.php/datalines',
     validate: function(attrs, options) {
         var errors = []
         if (!attrs.title && !attrs.amount && !attrs.type_line) {
@@ -73,7 +71,6 @@ var DataLine = Backbone.Model.extend({
         }
     }
 });
-
 
 var Models = {
     DataLine: DataLine,

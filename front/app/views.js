@@ -47,18 +47,10 @@ FormBudgetView = Backbone.View.extend({
         this.$el.find('input[name="title"]').focus();
     },
 
-    model: null,
-    template: _.template(['<div class="form-group">',
-        ' <label for="title">Budget</label> <input type="text" name="title" id="title" class="form-control"/>',
-        ' <label for="amount">montant</label> <input type="number" step="any" min="0" name="amount" class="form-control"/>',
-        ' <label for="date_start">du </label> <input type="date" name="date_start" class="form-control"/>',
-        ' <label for="date_end"> au </label> <input type="date" name="date_end" class="form-control"/>',
-        '&nbsp;&nbsp;<input type="submit" value="ajouter" class="form-control"/>',
-        '&nbsp;&nbsp;<input type="reset" value="annuler" class="form-control"/>',
-        '</div>'
-    ].join('')),
+    model: new Models.Budget(),
+    template: helpers.template('form-budget'),
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template(this.model.attributes));
         return this;
     }
 });
@@ -72,13 +64,13 @@ FormDataLines = Backbone.View.extend({
     },
     events: {
         submit: function() {
-            var spend = new Models.Spend();
+            event.preventDefault();
+
+            var spend = new Models.DataLine();
             var title = $.trim($(this.el).find('input[name="title"]').val());
             var tag = $.trim($(this.el).find('input[name="tag"]').val());
             var amount = $.trim($(this.el).find('input[name="amount"]').val());
             var type_line = $.trim($(this.el).find('input[name="type_line"]:checked').val());
-
-            event.preventDefault();
 
             spend.set({
                 title: title
@@ -111,23 +103,13 @@ FormDataLines = Backbone.View.extend({
             this._clearForm();
         }
     },
-    model: null,
-    template: _.template(
-        ['<div class="form-group">',
-            ' <label for="title">Titre</label> <input type="text" name="title" id="title" class="form-control"/>',
-            ' <label for="title">mot clé</label> <input type="text" name="tag" class="form-control"/>',
-            ' <label for="amount">montant</label> <input type="number" step="any" min="0" name="amount" class="form-control"/>',
-            ' <label>type</label>',
-            ' <div class="btn-group" data-toggle="buttons" id="type_line">',
-            ' <label class="btn btn-primary"><input type="radio" name="type_line" value="debit"> sortie</label>',
-            ' <label class="btn btn-primary"><input type="radio" name="type_line" value="credit"> entrée</label></div>',
-            '&nbsp;&nbsp;<input type="submit" value="ajouter" class="form-control"/>',
-            '&nbsp;&nbsp;<input type="reset" value="annuler" class="form-control"/>',
-            '</div>'
-        ].join('')
-    ),
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render);
+    },
+    model: new Models.DataLine,
+    template: helpers.template('form-data-lines'),
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template(this.model.attributes));
         return this;
     },
     _clearForm: function() {
@@ -162,21 +144,39 @@ GridView = Backbone.View.extend({
 });
 
 GridLineView = Backbone.View.extend({
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render);
+        this.listenTo(this.model, 'destroy', this.remove);
+    },
     tagName: 'tr',
-    model: Models.Spend,
-    events: {},
-    template: _.template(
-        ['<td><%= date_created %></td>',
-            '<td><%= title %></td>',
-            '<td><%= tag %></td>',
-            '<td><%= amount %></td>',
-            '<td>action</td>'
-        ].join('')
-    ),
+    model: new Models.DataLine,
+    events: {
+        'click a[data-action="remove"]': function() {
+            this.model.destroy();
+        },
+        'click a[data-action="update"]': function() {
+            var root = $('#form-update-data-line'),
+                id = $(root).find('input[name="id"]'),
+                title = $(root).find('input[name="title"]'),
+                amount = $(root).find('input[name="amount"]'),
+                tag = $(root).find('input[name="tag"]'),
+                type_line = $(root).find('input[value="' + this.model.get('type_line') + '"]');
+
+            $(id).val(this.model.get('id'));
+            $(title).val(this.model.get('title'));
+            $(amount).val(this.model.get('amount'));
+            $(tag).val(this.model.get('tag'));
+            $(type_line).parent('label').addClass('active');
+        }
+    },
+    template: helpers.template('line-grid'),
     render: function() {
         this.el.className = (this.model.attributes.type_line == 'credit') ? 'success' : 'danger';
         this.$el.html(this.template(this.model.attributes));
         return this;
+    },
+    _setFormToUpdate: function(modelToUpdate) {
+        console.log(modelToUpdate);
     }
 });
 

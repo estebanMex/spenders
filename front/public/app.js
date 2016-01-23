@@ -25223,38 +25223,49 @@ function trim(data) {
     return $.trim(data);
 }
 
+function template(templateName){
+    return _.template(document.querySelector("#"+templateName).innerHTML);
+}
 
+function firstAndLastDateOfCurrentMonth() {
+        var objDate = moment(),
+            firstDay = '01',
+            lastDay = (objDate.daysInMonth() < 10) ? '0'+ objDate.daysInMonth() : objDate.daysInMonth(),
+            month = (objDate.month() + 1 < 10) ? '0' + (objDate.month() + 1) : objDate.month() + 1,
+            year = objDate.year();
+        return {
+            date_start: [year, month, firstDay].join('-'),
+            date_end: [year, month, lastDay].join('-')
+        }
+    };
 
 Helpers = {
-	trim:trim
+	trim:trim,
+    template:template,
+	firstAndLastDateOfCurrentMonth : firstAndLastDateOfCurrentMonth
 };
 
 module.exports = Helpers;
 });
 
 require.register("models", function(exports, require, module) {
+var helpers = require('helpers');
+
 var Budget = Backbone.Model.extend({
     defaults: {
         title: '',
         date_created: function() {
             return moment().format('YYYY-MM-D HH:MM:SS');
         }(),
-        amount: 0,
-        date_start: '', // definir le 1er jour du mois courant
-        date_end: '', // definir le dernier jour du mois courant
+        amount: 0
     },
-    getDatesCurrentMonth: function() {
-        var objDate = moment(),
-            firstDay = 1,
-            lastDay = objDate.daysInMonth(),
-            month = objDate.month(),
-            year = objDate.year();
+    initialize: function(){
+    	var firstAndLastDate = helpers.firstAndLastDateOfCurrentMonth();
 
-        return {
-            date_start: '',
-            date_end: ''
-        }
-    }(),
+        this.set('date_start', firstAndLastDate['date_start']);
+    	this.set('date_end', firstAndLastDate['date_end']);
+
+    },
     url: '../../back/api/api.php/budgets/',
     validate: function(attrs, options) {
         var errors = [];
@@ -25283,7 +25294,10 @@ var DataLine = Backbone.Model.extend({
         amount: 0,
         tag: ''
     },
-    url: '../../back/api/api.php/datalines/',
+    initialize: function(){
+        this.id = this.get('cid');
+    },
+    url: '../../back/api/api.php/datalines',
     validate: function(attrs, options) {
         var errors = []
         if (!attrs.title && !attrs.amount && !attrs.type_line) {
@@ -25308,7 +25322,6 @@ var DataLine = Backbone.Model.extend({
         }
     }
 });
-
 
 var Models = {
     DataLine: DataLine,
@@ -25369,18 +25382,10 @@ FormBudgetView = Backbone.View.extend({
         this.$el.find('input[name="title"]').focus();
     },
 
-    model: null,
-    template: _.template(['<div class="form-group">',
-        ' <label for="title">Budget</label> <input type="text" name="title" id="title" class="form-control"/>',
-        ' <label for="amount">montant</label> <input type="number" step="any" min="0" name="amount" class="form-control"/>',
-        ' <label for="date_start">du </label> <input type="date" name="date_start" class="form-control"/>',
-        ' <label for="date_end"> au </label> <input type="date" name="date_end" class="form-control"/>',
-        '&nbsp;&nbsp;<input type="submit" value="ajouter" class="form-control"/>',
-        '&nbsp;&nbsp;<input type="reset" value="annuler" class="form-control"/>',
-        '</div>'
-    ].join('')),
+    model: new Models.Budget(),
+    template: helpers.template('form-budget'),
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template(this.model.attributes));
         return this;
     }
 });
@@ -25394,13 +25399,13 @@ FormDataLines = Backbone.View.extend({
     },
     events: {
         submit: function() {
-            var spend = new Models.Spend();
+            event.preventDefault();
+
+            var spend = new Models.DataLine();
             var title = $.trim($(this.el).find('input[name="title"]').val());
             var tag = $.trim($(this.el).find('input[name="tag"]').val());
             var amount = $.trim($(this.el).find('input[name="amount"]').val());
             var type_line = $.trim($(this.el).find('input[name="type_line"]:checked').val());
-
-            event.preventDefault();
 
             spend.set({
                 title: title
@@ -25433,23 +25438,13 @@ FormDataLines = Backbone.View.extend({
             this._clearForm();
         }
     },
-    model: null,
-    template: _.template(
-        ['<div class="form-group">',
-            ' <label for="title">Titre</label> <input type="text" name="title" id="title" class="form-control"/>',
-            ' <label for="title">mot clé</label> <input type="text" name="tag" class="form-control"/>',
-            ' <label for="amount">montant</label> <input type="number" step="any" min="0" name="amount" class="form-control"/>',
-            ' <label>type</label>',
-            ' <div class="btn-group" data-toggle="buttons" id="type_line">',
-            ' <label class="btn btn-primary"><input type="radio" name="type_line" value="debit"> sortie</label>',
-            ' <label class="btn btn-primary"><input type="radio" name="type_line" value="credit"> entrée</label></div>',
-            '&nbsp;&nbsp;<input type="submit" value="ajouter" class="form-control"/>',
-            '&nbsp;&nbsp;<input type="reset" value="annuler" class="form-control"/>',
-            '</div>'
-        ].join('')
-    ),
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render);
+    },
+    model: new Models.DataLine,
+    template: helpers.template('form-data-lines'),
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template(this.model.attributes));
         return this;
     },
     _clearForm: function() {
@@ -25484,21 +25479,39 @@ GridView = Backbone.View.extend({
 });
 
 GridLineView = Backbone.View.extend({
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render);
+        this.listenTo(this.model, 'destroy', this.remove);
+    },
     tagName: 'tr',
-    model: Models.Spend,
-    events: {},
-    template: _.template(
-        ['<td><%= date_created %></td>',
-            '<td><%= title %></td>',
-            '<td><%= tag %></td>',
-            '<td><%= amount %></td>',
-            '<td>action</td>'
-        ].join('')
-    ),
+    model: new Models.DataLine,
+    events: {
+        'click a[data-action="remove"]': function() {
+            this.model.destroy();
+        },
+        'click a[data-action="update"]': function() {
+            var root = $('#form-update-data-line'),
+                id = $(root).find('input[name="id"]'),
+                title = $(root).find('input[name="title"]'),
+                amount = $(root).find('input[name="amount"]'),
+                tag = $(root).find('input[name="tag"]'),
+                type_line = $(root).find('input[value="' + this.model.get('type_line') + '"]');
+
+            $(id).val(this.model.get('id'));
+            $(title).val(this.model.get('title'));
+            $(amount).val(this.model.get('amount'));
+            $(tag).val(this.model.get('tag'));
+            $(type_line).parent('label').addClass('active');
+        }
+    },
+    template: helpers.template('line-grid'),
     render: function() {
         this.el.className = (this.model.attributes.type_line == 'credit') ? 'success' : 'danger';
         this.$el.html(this.template(this.model.attributes));
         return this;
+    },
+    _setFormToUpdate: function(modelToUpdate) {
+        console.log(modelToUpdate);
     }
 });
 

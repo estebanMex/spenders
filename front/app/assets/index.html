@@ -9,12 +9,10 @@
 
 <body>
     <div class="container">
-
         <div id="dataBudgets" data-view="dataBudgets">
             <h2>Gestion budget</h2>
             <div class="budgets"></div>
         </div>
-    
         <div id="dataLines" data-view="datalines">
             <h2>Suivi conso</h2>
             <div class="dataLinesForm"></div>
@@ -32,8 +30,112 @@
                 <tbody></tbody>
             </table>
         </div>
-
     </div>
+    <!-- templates: start -->
+    <script type="text/template" id="form-budget">
+        <div class="form-group">
+            <label for="title">Budget</label>
+            <input type="text" name="title" id="title" class="form-control" />
+            <label for="amount">montant</label>
+            <input type="number" step="any" min="0" name="amount" class="form-control" />
+            <label for="date_start">du </label>
+            <input type="date" name="date_start" class="form-control" value="<%- date_start%>" />
+            <label for="date_end"> au </label>
+            <input type="date" name="date_end" class="form-control" value="<%- date_end%>" />&nbsp;&nbsp;
+            <input type="submit" value="ajouter" class="form-control" />&nbsp;&nbsp;
+            <input type="reset" value="annuler" class="form-control" />
+        </div>
+    </script>
+    <script type="text/template" id="form-data-lines">
+        <! --
+        // title: '',
+        // date_created: function() {
+        //     return moment().format('YYYY-MM-D HH:MM:SS');
+        // }(),
+        // type_line: '',
+        // amount: 0,
+        // tag: ''
+-->
+        <div class="form-group">
+            <label for="title">Titre</label>
+            <input type="text" name="title" id="title" class="form-control" value="<%- title %>">
+            <label for="title">mot clé</label>
+            <input type="text" name="tag" class="form-control">
+            <label for="amount">montant</label>
+            <input type="number" step="any" min="0" name="amount" class="form-control">
+            <label>type</label>
+            <div class="btn-group" data-toggle="buttons" id="type_line">
+                <label class="btn btn-primary">
+                    <input type="radio" name="type_line" value="debit"> sortie</label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="type_line" value="credit"> entrée</label>
+            </div>&nbsp;&nbsp;
+            <input type="submit" value="ajouter" class="form-control">&nbsp;&nbsp;
+            <input type="reset" value="annuler" class="form-control">
+        </div>
+    </script>
+    <script type="text/template" id="line-grid">
+        <td>
+            <%= date_created %>
+        </td>
+        <td>
+            <%= title %>
+        </td>
+        <td>
+            <%= tag %>
+        </td>
+        <td>
+            <%= amount %>
+        </td>
+        <td>
+            <a class="btn btn-danger" href="#" role="button" data-action="remove">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </a>
+            &nbsp;
+            <a class="btn btn-info" href="#" role="button" data-action="update" data-toggle="modal" data-target="#form-update-data-line">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            </a>
+        </td>
+    </script>
+    <!-- templates: end -->
+    <!-- MODAL -->
+    <div class="modal fade" id="form-update-data-line" role="dialog" aria-labelledby="form-update-data-line">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <input type="hidden" name="id" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Mise à jour</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="title">Titre</label>
+                        <input type="text" name="title" id="title" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="title">mot clé</label>
+                        <input type="text" name="tag" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">montant</label>
+                        <input type="number" step="any" min="0" name="amount" class="form-control">
+                    </div>
+                    <label>type</label>
+                    <div class="btn-group" data-toggle="buttons" id="type_line">
+                        <label class="btn btn-primary">
+                            <input type="radio" name="type_line" value="debit"> sortie</label>
+                        <label class="btn btn-primary">
+                            <input type="radio" name="type_line" value="credit"> entrée</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary">Mettre à jour</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL -->
     <script src="app.js"></script>
     <script>
     require('application').init();
