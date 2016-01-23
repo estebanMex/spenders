@@ -25208,7 +25208,7 @@ var Models = require('models');
 
 var DataLines = Backbone.Collection.extend({
 	model: Models.DataLine,
-	url: '../../back/api/api.php/datalines/'
+	url: '../../back/api/api.php/datalines'
 });
 
 var Collections = {
@@ -25297,7 +25297,6 @@ var DataLine = Backbone.Model.extend({
     initialize: function(){
         this.id = this.get('cid');
     },
-    url: '../../back/api/api.php/datalines',
     validate: function(attrs, options) {
         var errors = []
         if (!attrs.title && !attrs.amount && !attrs.type_line) {
@@ -25487,21 +25486,10 @@ GridLineView = Backbone.View.extend({
     model: new Models.DataLine,
     events: {
         'click a[data-action="remove"]': function() {
-            this.model.destroy();
-        },
-        'click a[data-action="update"]': function() {
-            var root = $('#form-update-data-line'),
-                id = $(root).find('input[name="id"]'),
-                title = $(root).find('input[name="title"]'),
-                amount = $(root).find('input[name="amount"]'),
-                tag = $(root).find('input[name="tag"]'),
-                type_line = $(root).find('input[value="' + this.model.get('type_line') + '"]');
-
-            $(id).val(this.model.get('id'));
-            $(title).val(this.model.get('title'));
-            $(amount).val(this.model.get('amount'));
-            $(tag).val(this.model.get('tag'));
-            $(type_line).parent('label').addClass('active');
+            var areYouSure = confirm('vous etes sur de vouloir supprimer ?');
+            if(areYouSure){
+                this.model.destroy();
+            }
         }
     },
     template: helpers.template('line-grid'),

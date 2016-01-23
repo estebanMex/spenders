@@ -46,7 +46,6 @@ var DataLine = Backbone.Model.extend({
     initialize: function(){
         this.id = this.get('cid');
     },
-    url: '../../back/api/api.php/datalines',
     validate: function(attrs, options) {
         var errors = []
         if (!attrs.title && !attrs.amount && !attrs.type_line) {

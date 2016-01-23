@@ -2,7 +2,7 @@ var Models = require('models');
 
 var DataLines = Backbone.Collection.extend({
 	model: Models.DataLine,
-	url: '../../back/api/api.php/datalines/'
+	url: '../../back/api/api.php/datalines'
 });
 
 var Collections = {
