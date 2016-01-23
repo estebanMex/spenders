@@ -136,11 +136,9 @@ GridView = Backbone.View.extend({
         });
 
         $(this.el).find('tbody').html(items.join(''));
-
         return this;
     },
-    collection: dataLinesCollection,
-    isrendered: false
+    collection: dataLinesCollection
 });
 
 GridLineView = Backbone.View.extend({
@@ -153,7 +151,7 @@ GridLineView = Backbone.View.extend({
     events: {
         'click a[data-action="remove"]': function() {
             var areYouSure = confirm('vous etes sur de vouloir supprimer ?');
-            if(areYouSure){
+            if (areYouSure) {
                 this.model.destroy();
             }
         }
@@ -170,7 +168,7 @@ GridLineView = Backbone.View.extend({
 });
 
 dataLinesCollection.on("add", function(spend) {
-    var gridViewElement = $('tbody');
+    var gridViewElement = $('#dataLines tbody');
     $(gridViewElement).prepend(new GridLineView({
         model: spend
     }).render().el);

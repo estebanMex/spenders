@@ -13,8 +13,29 @@
             <h2>Gestion budget</h2>
             <div class="budgets"></div>
         </div>
+        <div id="statsDepenses" data-view="dataStats">
+            <h2>Bilan dépenses</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>entrées</th>
+                        <th>depenses</th>
+                        <th>budget mois courant</th>
+                        <th>status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>000</td>
+                        <td>000</td>
+                        <td>000</td>
+                        <td>ok | warm | danger</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div id="dataLines" data-view="datalines">
-            <h2>Suivi conso</h2>
+            <h2>Ajouter une ligne</h2>
             <div class="dataLinesForm"></div>
             <hr />
             <table class="table">
@@ -47,15 +68,6 @@
         </div>
     </script>
     <script type="text/template" id="form-data-lines">
-        <! --
-        // title: '',
-        // date_created: function() {
-        //     return moment().format('YYYY-MM-D HH:MM:SS');
-        // }(),
-        // type_line: '',
-        // amount: 0,
-        // tag: ''
--->
         <div class="form-group">
             <label for="title">Titre</label>
             <input type="text" name="title" id="title" class="form-control" value="<%- title %>">
