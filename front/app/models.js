@@ -8,11 +8,11 @@ var Budget = Backbone.Model.extend({
         }(),
         amount: 0
     },
-    initialize: function(){
-    	var firstAndLastDate = helpers.firstAndLastDateOfCurrentMonth();
+    initialize: function() {
+        var firstAndLastDate = helpers.firstAndLastDateOfCurrentMonth();
 
         this.set('date_start', firstAndLastDate['date_start']);
-    	this.set('date_end', firstAndLastDate['date_end']);
+        this.set('date_end', firstAndLastDate['date_end']);
 
     },
     url: '../../back/api/api.php/budgets/',
@@ -43,7 +43,8 @@ var DataLine = Backbone.Model.extend({
         amount: 0,
         tag: ''
     },
-    initialize: function(){
+    url: '../../back/api/api.php/datalines',
+    initialize: function() {
         this.id = this.get('cid');
     },
     validate: function(attrs, options) {
@@ -71,8 +72,18 @@ var DataLine = Backbone.Model.extend({
     }
 });
 
+var DataBilanBudget = Backbone.Model.extend({
+    defaults: {
+        entries: 0,
+        outputs: 0,
+        budgetCurrent: 0
+    },
+    initialize: function() {}
+});
+
 var Models = {
     DataLine: DataLine,
+    DataBilanBudget: DataBilanBudget,
     Budget: Budget
 };
 

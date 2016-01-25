@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Simple Brunch Demo</title>
+    <title>Gestion depenses et budget mensuel</title>
     <link rel="stylesheet" href="app.css">
 </head>
 
@@ -15,24 +15,7 @@
         </div>
         <div id="statsDepenses" data-view="dataStats">
             <h2>Bilan dépenses</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>entrées</th>
-                        <th>depenses</th>
-                        <th>budget mois courant</th>
-                        <th>status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>000</td>
-                        <td>000</td>
-                        <td>000</td>
-                        <td>ok | warm | danger</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="view-stats"></div>
         </div>
         <div id="dataLines" data-view="datalines">
             <h2>Ajouter une ligne</h2>
@@ -53,6 +36,27 @@
         </div>
     </div>
     <!-- templates: start -->
+    <script type="text/template" id="stats-view">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>entrées</th>
+                    <th>depenses</th>
+                    <th>budget mois courant</th>
+                    <th>status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>000</td>
+                    <td>000</td>
+                    <td>000</td>
+                    <td>ok | warm | danger</td>
+                </tr>
+            </tbody>
+        </table>
+        </table>
+    </script>
     <script type="text/template" id="form-budget">
         <div class="form-group">
             <label for="title">Budget</label>
