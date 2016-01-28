@@ -13,6 +13,8 @@ var App = {
             formDataLines = new Views.FormDataLines(),
             gridView = new Views.GridView();
 
+        new Views.DataStatsView().render();
+
         budgetsView.append(FormBudgetView.render().el);
         dataLinesFormView.append(formDataLines.render().el, gridView.render().el);
 

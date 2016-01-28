@@ -76,8 +76,9 @@ var DataBilanBudget = Backbone.Model.extend({
     defaults: {
         entries: 0,
         outputs: 0,
-        budgetCurrent: 0
+        statuts: 'warm'
     },
+    urlRoot: '/back/api/api.php/custom_currents_totals/',
     initialize: function() {}
 });
 

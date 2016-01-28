@@ -2,12 +2,16 @@
 /***
 * https://www.leaseweb.com/labs/2015/10/creating-a-simple-rest-api-in-php/
 */
+include_once('helpers.php');
   
-function dump_pre($data){
+function dump_pre($data, $die = false){
 echo '<pre>';
 var_dump($data);
 echo '</pre>';
-die('en debug');
+  if($die){
+    die('en debug');  
+  }
+
 } 
 
 // connect to the mysql database
@@ -20,9 +24,13 @@ $dataRequest = (file_get_contents('php://input')) ? file_get_contents('php://inp
 
 $request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
 $input = json_decode($dataRequest,true);
-  
+
+
+// dump_pre($input);
+// die();  
 // retrieve the table and key from the path
 $table = preg_replace('/[^a-z0-9_]+/i','',array_shift($request));
+
 $key = array_shift($request)+0;
 
 // escape the columns and values from the input object
@@ -43,9 +51,19 @@ for ($i=0;$i<count($columns);$i++) {
 // create SQL based on HTTP method
 switch ($method) {
   case 'GET':
-    $sql = "select * from `$table` WHERE ".($key?"id=$key AND":''). " MONTH(date_created) = MONTH(NOW()) AND YEAR(date_created) = YEAR(NOW());"; 
+  if(strpos($table, "custom_") === 0){
+    $custom = str_replace("custom_", "", $table);
+    $sql = getSql($custom);
+  } else {
+    if($key){
+      $sql = "select * from `$table` WHERE "."id=".$key; 
+    }else{
+      $sql =  getSql('get_all',array('table'=>$table));
+      // $sql = "select * from `$table` WHERE MONTH(date_created) = MONTH(NOW()) AND YEAR(date_created) = YEAR(NOW());"; 
+    }
+  }
     //$sql = "select * from `$table`".($key?" WHERE id=$key":''); break;
-    //echo $sql;
+    // echo $sql;
     break; 
   case 'PUT':
     $sql = "update `$table` set $set where id=$key"; break;
@@ -66,11 +84,20 @@ if (!$result) {
  
 // print results, insert id or affected row count
 if ($method == 'GET') {
+
   if (!$key) echo '[';
   for ($i=0;$i<mysqli_num_rows($result);$i++) {
     echo ($i>0?',':'').json_encode(mysqli_fetch_object($result));
   }
   if (!$key) echo ']';
+
+  /**
+  * @TODO penser à gerer le cas de pas de resultats
+  */  
+  // if(mysqli_num_rows($result) === 0){
+  //   echo '[]';
+  // }
+
 } elseif ($method == 'POST') {
   echo mysqli_insert_id($link);
 } else {

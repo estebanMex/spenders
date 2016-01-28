@@ -22800,6 +22800,8 @@ var App = {
             formDataLines = new Views.FormDataLines(),
             gridView = new Views.GridView();
 
+        new Views.DataStatsView().render();
+
         budgetsView.append(FormBudgetView.render().el);
         dataLinesFormView.append(formDataLines.render().el, gridView.render().el);
 
@@ -25327,8 +25329,9 @@ var DataBilanBudget = Backbone.Model.extend({
     defaults: {
         entries: 0,
         outputs: 0,
-        budgetCurrent: 0
+        statuts: 'warm'
     },
+    urlRoot: '/back/api/api.php/custom_currents_totals/',
     initialize: function() {}
 });
 
@@ -25358,14 +25361,26 @@ DataStatsView = Backbone.View.extend({
     attributes: {
         id: 'data-stats-view'
     },
-    collection: dataLinesCollection,
     template: helpers.template('stats-view'),
-    initialize: function() {},
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render);
+        var self = this;
+
+        this.model.fetch({
+            success:function(data) {
+                self.model.set('entries', data.attributes[0].totals, {silent:true});
+                self.model.set('outputs',data.attributes[1].totals);
+
+                self.model.unset(0,{silent:true});
+                self.model.unset(1,{silent:true});
+            }
+        });
+
+    },
     model: new Models.DataBilanBudget(),
     render: function() {
         var dataStatsView = $('.view-stats');
-        console.log(this.collection);
-        dataStatsView.append(this.template(this.model ? this.model.attributes : {}));
+        dataStatsView.empty().append(this.template(this.model.attributes));
         return this;
     }
 });
@@ -25482,16 +25497,11 @@ GridView = Backbone.View.extend({
     render: function() {
         var items = [];
         this.collection.fetch();
-        // var DataBilanBudget = new DataBilanBudget();
         _.each(this.collection.models.reverse(), function(model) {
-            // DataBilanBudget.set('entries', );
-            console.log(model);
             items.push(new GridLineView({
                 model: model
             }).render().el);
         });
-        
-        new DataStatsView({collection: this.collection }).render();
 
         $(this.el).find('tbody').html(items.join(''));
         return this;
